@@ -125,7 +125,7 @@ function AppLayout() {
 function App() {
     return (
         <ShopProvider>
-            <Router>
+            <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                 <AppLayout />
             </Router>
         </ShopProvider>
