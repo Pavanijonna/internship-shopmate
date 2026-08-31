@@ -1,7 +1,12 @@
 import axios from "axios";
 
+const getBaseURL = () => {
+  const url = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api";
+  return url.endsWith('/api') ? url : `${url.replace(/\/$/, '')}/api`;
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api",
+  baseURL: getBaseURL(),
   headers: {
     "Content-Type": "application/json",
   },
@@ -24,7 +29,7 @@ api.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem("refreshToken");
         if (refreshToken) {
-          const apiUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api";
+          const apiUrl = getBaseURL();
           const res = await axios.post(`${apiUrl}/users/refresh`, { refreshToken });
           const newAccessToken = res.data.accessToken;
           if (res.status === 200) {
