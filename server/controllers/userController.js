@@ -43,7 +43,7 @@ const registerUser = async (req, res) => {
             password: hashedPassword,
             phone_number: phone_number || null, // Optional field
             role: role || 'user', // Default role is 'user'
-            isVerified: false, // Email verification status
+            isVerified: true, // Auto-verified for dev/testing
             createdAt: new Date()
         };
         const result = await db.collection('users').insertOne(newUser);

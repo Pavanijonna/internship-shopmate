@@ -6,10 +6,10 @@ import { Wand2, Eye } from 'lucide-react';
 const BlogAdmin = () => {
     const [topic, setTopic] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
-    const [inReview, setInReview] = useState([]);
+    const [inReview, setInReview] = useState([]); 
     const [published, setPublished] = useState([]);
     const navigate = useNavigate();
-
+ 
     const fetchBlogs = async () => {
         try {
             const [r1, r2] = await Promise.all([

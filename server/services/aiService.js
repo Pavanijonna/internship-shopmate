@@ -36,7 +36,7 @@ async function generateProductDescription(productName, category) {
                 contents: prompt
             });*/
                 const model = new ChatGoogleGenerativeAI({
-                    model: "gemini-2.5-flash",
+            model: "gemini-3.6-flash",
                     temperature: 0,
                     maxRetries: 2,
                 });
@@ -79,7 +79,7 @@ async function generateProductDetailsFromImage(imageBuffer, mimeType) {
     try {
         console.log(`Generating details for image. Size: ${imageBuffer.length}, Type: ${mimeType}`);
         const result = await genAI.models.generateContent({
-            model: "gemini-2.0-flash",
+            model: "gemini-3.6-flash",
             contents: [
                 {
                     role: 'user',
@@ -173,7 +173,7 @@ async function answerCustomerQuestion(question, history = []) {
         `;
 
         const result = await genAI.models.generateContent({
-            model: "gemini-2.0-flash",
+            model: "gemini-3.6-flash",
             contents: prompt
         });
 

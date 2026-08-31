@@ -1,37 +1,50 @@
 const nodeMailer = require('nodemailer');
 require('dotenv').config();
-// const transporter = nodeMailer.createTransport({
-//     host: process.env.MAIL_SERVER,
-//     port: Number(process.env.MAIL_PORT),
-//     secure: false, // true for 465, false for other ports
-//     auth: {
-//         user: process.env.MAIL_USERNAME,
-//         pass: process.env.MAIL_PASSWORD
-//     }
-// });
-console.log("MAIL_USERNAME:", process.env.MAIL_USERNAME);
-console.log("MAIL_PASSWORD:", process.env.MAIL_PASSWORD ? "Loaded" : "Missing");
-console.log("MAIL_SERVER:", process.env.MAIL_SERVER);
-console.log("MAIL_PORT:", process.env.MAIL_PORT);
-const transporter = nodeMailer.createTransport({
-    host: process.env.MAIL_SERVER,
-    port: Number(process.env.MAIL_PORT),
-    secure: false,
-    auth: {
-        user: process.env.MAIL_USERNAME,
-        pass: process.env.MAIL_PASSWORD,
-    },
-});
+
+const mailUser = process.env.MAIL_USERNAME;
+const mailPass = process.env.MAIL_PASSWORD;
+const mailHost = process.env.MAIL_SERVER || 'smtp.gmail.com';
+const mailPort = Number(process.env.MAIL_PORT) || 587;
+
+let transporter = null;
 let isSmtpReady = false;
-transporter.verify((error, success) => {
-    if (error) {
-        console.log("⚠️ SMTP verification failed. Email features will log to console.");
-        isSmtpReady = false;
-    } else {
-        console.log("SMTP READY");
-        isSmtpReady = true;
-    }
-});
+
+if (mailUser && mailPass && !mailPass.includes('your_app_password')) {
+    const isGmail = mailHost.includes('gmail');
+    transporter = nodeMailer.createTransport(
+        isGmail
+            ? {
+                  service: 'gmail',
+                  auth: {
+                      user: mailUser,
+                      pass: mailPass,
+                  },
+                  tls: { rejectUnauthorized: false },
+              }
+            : {
+                  host: mailHost,
+                  port: mailPort,
+                  secure: mailPort === 465,
+                  auth: {
+                      user: mailUser,
+                      pass: mailPass,
+                  },
+                  tls: { rejectUnauthorized: false },
+              }
+    );
+
+    transporter.verify((error, success) => {
+        if (error) {
+            console.log("ℹ️  SMTP auth failed (Invalid or expired Gmail App Password). Console logging fallback enabled.");
+            isSmtpReady = false;
+        } else {
+            console.log("✅ SMTP Server Connected & Ready!");
+            isSmtpReady = true;
+        }
+    });
+} else {
+    console.log("ℹ️  SMTP credentials not set. Console logging fallback enabled for emails.");
+}
 
 const sendVerificationEmail = async (email, name, token) => {
     try {

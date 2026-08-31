@@ -57,27 +57,43 @@ async function main() {
     const products = await getCollection().find({}).toArray();
 
     const vectors = [];
-    // For each product, generate embedding
+    // For each product, generate embedding with retry logic
     for (const product of products) {
-        const response = await ai.models.embedContent({
-            model: 'gemini-embedding-001',
-            contents: 'Product Name: ' + product.name + ', Product Description: ' + product.description
-        });
-
-        console.log("Created embedding for product: " + product.name);
-
-        // Push this vector to an array
-        const vector = {
-            id: product._id.toString(),
-            values: response.embeddings[0].values,
-            metadata: {
-                name: product.name,
-                description: product.description,
-                category: product.category,
-                price: product.price
+        let response = null;
+        for (let attempt = 1; attempt <= 4; attempt++) {
+            try {
+                response = await ai.models.embedContent({
+                    model: 'gemini-embedding-001',
+                    contents: 'Product Name: ' + product.name + ', Product Description: ' + product.description
+                });
+                break;
+            } catch (err) {
+                console.warn(`⚠️ Attempt ${attempt}/4 failed for "${product.name}": ${err.message}`);
+                if (attempt === 4) {
+                    console.error(`❌ Could not generate embedding for "${product.name}" after 4 attempts.`);
+                    break;
+                }
+                console.log(`   Retrying in ${2 * attempt} seconds...`);
+                await new Promise(r => setTimeout(r, 2000 * attempt));
             }
-        };
-        vectors.push(vector);
+        }
+
+        if (response && response.embeddings && response.embeddings[0]) {
+            console.log("Created embedding for product: " + product.name);
+
+            // Push this vector to an array
+            const vector = {
+                id: product._id.toString(),
+                values: response.embeddings[0].values,
+                metadata: {
+                    name: product.name,
+                    description: product.description,
+                    category: product.category,
+                    price: product.price
+                }
+            };
+            vectors.push(vector);
+        }
     }
 
     console.log("Total vectors generated: " + vectors.length);

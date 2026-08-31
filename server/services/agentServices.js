@@ -8,7 +8,7 @@ const {ChatGoogleGenerativeAI}=require('@langchain/google-genai');
 const {checkOrderStatusTool,searchProductsTool,getRefundPolicyTool}=require('../tools/shopTools');
 
 const model = new ChatGoogleGenerativeAI({
-    model: 'gemini-2.5-flash',
+    model: 'gemini-3.6-flash',
     temperature: 0,
 });
 
