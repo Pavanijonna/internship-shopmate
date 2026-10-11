@@ -1,20 +1,32 @@
 import axios from "axios";
 
-const getBaseURL = () => {
-  const url = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api";
-  return url.endsWith('/api') ? url : `${url.replace(/\/$/, '')}/api`;
-};
+const API_BASE_URL = (import.meta.env.VITE_API_URL || "https://internship-shopmate.onrender.com").replace(/\/$/, "");
 
 const api = axios.create({
-  baseURL: getBaseURL(),
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
 api.interceptors.request.use((config) => {
+  // Ensure all API calls route through the base URL with clean relative paths
+  if (config.url && !config.url.startsWith("http://") && !config.url.startsWith("https://")) {
+    const baseEndsWithApi = config.baseURL && config.baseURL.replace(/\/$/, "").endsWith("/api");
+    const urlStartsWithApi = config.url.startsWith("/api") || config.url.startsWith("api/");
+
+    if (!baseEndsWithApi && !urlStartsWithApi) {
+      config.url = `/api${config.url.startsWith("/") ? "" : "/"}${config.url}`;
+    } else if (baseEndsWithApi && urlStartsWithApi) {
+      config.url = config.url.replace(/^\/?api/, "");
+      if (!config.url.startsWith("/")) {
+        config.url = `/${config.url}`;
+      }
+    }
+  }
+
   const token = localStorage.getItem("accessToken");
-  if(token){
+  if (token) {
     config.headers["Authorization"] = `Bearer ${token}`;
   }
   return config;
@@ -29,8 +41,9 @@ api.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem("refreshToken");
         if (refreshToken) {
-          const apiUrl = getBaseURL();
-          const res = await axios.post(`${apiUrl}/users/refresh`, { refreshToken });
+          const authBase = API_BASE_URL.replace(/\/$/, "");
+          const refreshUrl = authBase.endsWith("/api") ? `${authBase}/users/refresh` : `${authBase}/api/users/refresh`;
+          const res = await axios.post(refreshUrl, { refreshToken });
           const newAccessToken = res.data.accessToken;
           if (res.status === 200) {
             localStorage.setItem("accessToken", newAccessToken);
@@ -59,5 +72,5 @@ export const logout = () => {
   window.location.href = "/login";
 };
 
-
+export { API_BASE_URL };
 export default api;

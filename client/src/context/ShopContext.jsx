@@ -1,5 +1,4 @@
 import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
 import api from '../utils/api';
 export const ShopContext = createContext();
 

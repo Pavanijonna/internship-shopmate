@@ -1,6 +1,5 @@
 import React from 'react';
 import ChatBot from 'react-chatbotify';
-import axios from 'axios';
 import api from '../utils/api';
 
 const ShopMateChatbot=()=> {

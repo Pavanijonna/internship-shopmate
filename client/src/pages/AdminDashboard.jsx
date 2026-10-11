@@ -24,7 +24,7 @@ const AdminDashboard = () => {
 
     const fetchProducts = async () => {
         try {
-            const response = await api.get('/products');//http://localhost:3001/api/products
+            const response = await api.get('/products');
             setProducts(response.data);
         } catch (error) {
             console.error('Error fetching products:', error);
