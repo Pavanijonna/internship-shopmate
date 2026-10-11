@@ -3,10 +3,10 @@ import axios from "axios";
 export const API_BASE_URL = (
   (typeof import.meta !== "undefined" && import.meta.env && (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL)) ||
   (typeof process !== "undefined" && process.env && (process.env.REACT_APP_API_URL || process.env.VITE_API_URL)) ||
-  "https://internship-shopmate.onrender.com"
+  "https://internship-shopmate-backend.onrender.com"
 ).replace(/\/$/, "");
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",

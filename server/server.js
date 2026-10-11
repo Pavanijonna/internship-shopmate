@@ -8,6 +8,7 @@ const userRoutes = require('./routes/userRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 dotenv.config();
 
 const app = express();
@@ -19,7 +20,7 @@ app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: '*' }));
 
 // Routes
 app.use('/api/products', productRoutes);
@@ -34,7 +35,7 @@ app.get('/', (req, res) => {
 
 // Connect to DB and start server
 connectDB().then(() => {
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`Server listening on port ${PORT}`);
     });
 });
