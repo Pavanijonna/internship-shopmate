@@ -1,6 +1,10 @@
 import axios from "axios";
 
-const API_BASE_URL = (import.meta.env.VITE_API_URL || "https://internship-shopmate.onrender.com").replace(/\/$/, "");
+export const API_BASE_URL = (
+  (typeof import.meta !== "undefined" && import.meta.env && (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL)) ||
+  (typeof process !== "undefined" && process.env && (process.env.REACT_APP_API_URL || process.env.VITE_API_URL)) ||
+  "https://internship-shopmate.onrender.com"
+).replace(/\/$/, "");
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -72,5 +76,4 @@ export const logout = () => {
   window.location.href = "/login";
 };
 
-export { API_BASE_URL };
 export default api;
