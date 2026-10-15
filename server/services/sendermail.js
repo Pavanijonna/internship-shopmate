@@ -49,7 +49,7 @@ if (mailUser && mailPass && !mailPass.includes('your_app_password')) {
 const sendVerificationEmail = async (email, name, token) => {
     try {
         const verificationLink =
-            `${process.env.SERVER_URL || 'https://internship-shopmate-backend.onrender.com'}/api/users/verify-email/${token}`;
+            `${process.env.SERVER_URL || 'https://internship-shopmate.onrender.com'}/api/users/verify-email/${token}`;
 
         console.log("\n=========================================");
         console.log("✉️  [LOCAL DEV] VERIFICATION EMAIL INFO:");
