@@ -1,10 +1,28 @@
 import axios from "axios";
 
-export const API_BASE_URL = (
-  (typeof import.meta !== "undefined" && import.meta.env && (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL)) ||
-  (typeof process !== "undefined" && process.env && (process.env.REACT_APP_API_URL || process.env.VITE_API_URL)) ||
-  "https://internship-shopmate-backend.onrender.com"
-).replace(/\/$/, "");
+const resolveApiBaseUrl = () => {
+  if (typeof window !== "undefined") {
+    const isLocalhost =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1";
+
+    if (isLocalhost) {
+      const envUrl = typeof import.meta !== "undefined" && import.meta.env && (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL);
+      if (envUrl && (envUrl.includes("localhost") || envUrl.includes("127.0.0.1"))) {
+        return envUrl.replace(/\/$/, "");
+      }
+      return "http://localhost:3001";
+    }
+  }
+
+  return (
+    (typeof import.meta !== "undefined" && import.meta.env && (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL)) ||
+    (typeof process !== "undefined" && process.env && (process.env.REACT_APP_API_URL || process.env.VITE_API_URL)) ||
+    "https://internship-shopmate-backend.onrender.com"
+  ).replace(/\/$/, "");
+};
+
+export const API_BASE_URL = resolveApiBaseUrl();
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
